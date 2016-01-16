@@ -5,8 +5,15 @@ app.use(useragent.express());
 
 app.get('/', function(req, res) {
   var os = req.useragent.os,
-      IPAddress = req.ip,
-      language = req.headers['accept-language'].split(',')[0];
+      language = req.headers['accept-language'].split(',')[0],
+      IPAddress = req.headers["x-forwarded-for"];
+
+  if (!IPAddress){
+    IPAddress = req.connection.remoteAddress;
+  } else {
+    var x = IPAddress.split(",");
+    IPAddress = x[x.length-1];
+  }
 
   res.json({"IP Address": IPAddress,"Language": language, "OS": os});
 });
